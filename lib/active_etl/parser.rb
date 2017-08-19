@@ -10,7 +10,7 @@ module ActiveETL
         dsl = ActiveETL::DSL.new(context)
 
         if source_file
-          dsl.instance_eval(File.read(source_file))
+          dsl.instance_eval(File.read(source_file), source_file)
         else
           dsl.instance_eval(&block)
         end

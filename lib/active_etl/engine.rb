@@ -13,7 +13,7 @@ module ActiveETL
       end
 
       def process(file)
-        ActiveETL::Process.new(parse(file)).start
+        ActiveETL::Job.new(parse(file)).start
       end
 
       def parse(file)

@@ -1,7 +1,10 @@
 module ActiveETL
   module Steps
     module Inputs
-      class HttpInput < ActiveETL::Steps::Base
+      class Http < ActiveETL::Steps::Base
+
+        def process
+        end
       end
     end
   end

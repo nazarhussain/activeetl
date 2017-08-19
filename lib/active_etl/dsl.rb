@@ -9,7 +9,7 @@ module ActiveETL
 
       step_klass = "ActiveETL::Steps::#{step_klass.to_s.classify}" if step_klass.is_a? Symbol or step_klass.is_a? String
       begin
-        step_klass = Kernel.const_get step_klass
+        step_klass = step_klass.constantize
       rescue
         raise ArgumentError, "We cant found step definition for #{step_klass}"
       end
