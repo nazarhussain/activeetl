@@ -18,7 +18,7 @@ module ActiveETL
       end
 
       private
-      def raise_not_supported_result(type)
+      def raise_not_supported_result_type(type)
         raise ArgumentError, "Result type #{type} is not supported by #{self.class}"
       end
 

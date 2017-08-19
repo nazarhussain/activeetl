@@ -21,8 +21,11 @@ module ActiveETL
             when ActiveETL::Result::TYPE_HASH
               result.data = result.data.to_json
               result.type = ActiveETL::Result::TYPE_JSON
+            when ActiveETL::Result::TYPE_STRING
+              result.data = JSON.parse(result.data)
+              result.type = ActiveETL::Result::TYPE_JSON
             else
-              raise_not_supported_result
+              raise_not_supported_result_type result.type
           end
           self
         end
