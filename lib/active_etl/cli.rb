@@ -21,9 +21,7 @@ module ActiveETL
       end
 
       ActiveETL::Engine.init(options)
-      ARGV.each do |file|
-        ActiveETL::Engine.process(file) #if File.exist? file
-      end
+      ActiveETL::Engine.process(ARGV)
     end
   end
 end

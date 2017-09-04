@@ -17,8 +17,16 @@ module ActiveETL
         @@initialized = true
       end
 
-      def process(file)
-        ActiveETL::Job.new(parse(file)).start
+      def process(files=[])
+        files = [files] unless files.is_a? Array
+
+        files.each do |file|
+          #Process.fork do
+            ActiveETL::Job.new(parse(file)).start
+          #end
+        end
+
+        #Process.wait
       end
 
       def parse(file)

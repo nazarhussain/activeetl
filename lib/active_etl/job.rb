@@ -1,3 +1,5 @@
+require 'benchmark'
+
 module ActiveETL
 
   # This class will be responsible to process one ETL job
@@ -12,28 +14,38 @@ module ActiveETL
     end
 
     def start
-      puts "Processing #{@context.etl_file}"
-      current_index = @context.start_step
-      previous_index = nil
-      result = nil
+      log "Starting #{@context.etl_file}"
 
-      while !current_index.nil?
-        # Load current step
-        step = @context.steps[current_index]
+      time = Benchmark.realtime do
+        current_index = @context.start_step
+        previous_index = nil
+        result = nil
 
-        # Set result from previous step
-        # If some previous step present
-        step.result = result if previous_index.present?
+        while !current_index.nil?
+          # Load current step
+          step = @context.steps[current_index]
 
-        # Process the current step
-        puts "Processing '#{step.name}'"
-        result = step.process.result
+          # Set result from previous step
+          # If some previous step present
+          step.result = result if previous_index.present?
 
-        # Move to next step and store current as previous
-        previous_index  = current_index
-        current_index = @context.hops[current_index]
+          # Process the current step
+          log " == Processing '#{step.name}'"
+          time = Benchmark.realtime do
+            result = step.process.result
+          end
+          log " == Finished '#{step.name}' #{time * 1000}ms"
+
+          # Move to next step and store current as previous
+          previous_index = current_index
+          current_index = @context.hops[current_index]
+        end
       end
-      #puts @context.inspect
+      log "Finished #{@context.etl_file} #{time * 1000}ms"
+    end
+
+    def log(content)
+      ActiveETL.logger.tagged(@context.etl_file) {ActiveETL.logger.info(content)}
     end
   end
 end

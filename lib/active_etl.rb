@@ -5,5 +5,5 @@ ActiveSupport::Dependencies.autoload_paths = [
 ]
 
 module ActiveETL
-  # Your code goes here...
+  include ActiveETL::Logger
 end
