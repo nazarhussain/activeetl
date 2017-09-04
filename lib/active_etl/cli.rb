@@ -7,10 +7,12 @@ module ActiveETL
     def self.run(args)
       options = {}
       OptionParser.new do |opts|
-        opts.banner = "Usage: kiba your-script.etl [options]"
-        opts.on("-r", "--runner [RUNNER_CLASS]", "Specify Kiba runner class") do |runner|
-          options[:runner] = runner
+        opts.banner = 'Usage: activeetl your-script.rb [options]'
+
+        opts.on('-d', '--database [DB_CONFIG_FILE]', 'Specify a database config class') do |db|
+          options[:db_config] = db
         end
+
       end.parse!(args)
 
       if args.size < 1

@@ -18,6 +18,11 @@ module ActiveETL
       end
 
       private
+
+      def default_options
+        raise ArgumentError, "Implement default options for for #{self.class}"
+      end
+
       def raise_not_supported_result_type(type)
         raise ArgumentError, "Result type #{type} is not supported by #{self.class}"
       end

@@ -1,15 +1,20 @@
+require 'yaml'
+require 'erb'
+
 module ActiveETL
   # This class will hold base level details of over all ETL execution
   class Engine
+    cattr_reader :initialized, :databases
+
     class << self
 
       def init(options={})
-        return unless @initialized
+        return if @@initialized == true
 
-        options[:config] ||= 'database.yml'
-        options[:config] = 'config/database.yml' unless File.exist?(options[:config])
-        database_configuration = YAML::load(ERB.new(IO.read(options[:config])).result + "\n")
-        @initialized = true
+        options[:db_config] ||= 'config/database.yml'
+        @@databases = YAML::load(ERB.new(IO.read(options[:db_config])).result + "\n")
+
+        @@initialized = true
       end
 
       def process(file)
@@ -18,6 +23,10 @@ module ActiveETL
 
       def parse(file)
         ActiveETL::Parser.parse(file)
+      end
+
+      def connection(identifier)
+        ActiveRecord::Base.establish_connection(@@databases[identifier.to_s])
       end
     end # class << self
   end
