@@ -1,7 +1,10 @@
 module ActiveETL
   class DSL
-    def initialize(context)
+    attr_accessor :params
+
+    def initialize(context, params)
       @context = context
+      @params = params
     end
 
     def step(name, step_klass, params={})

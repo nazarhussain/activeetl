@@ -13,6 +13,10 @@ module ActiveETL
           options[:db_config] = db
         end
 
+        opts.on('-p', '--params [PARAM String]', 'Comma separated params passes to each etl file  e.g. param1=yyyy,param2=xxxx') do |params|
+          options[:params] = params
+        end
+
       end.parse!(args)
 
       if args.size < 1

@@ -4,10 +4,10 @@ module ActiveETL
   # this parser will make future safe to fix any file encoding issue
   class Parser
     class << self
-      def parse(source_file, &block)
+      def parse(source_file, params={}, &block)
 
-        context = ActiveETL::Context.new(source_file)
-        dsl = ActiveETL::DSL.new(context)
+        context = ActiveETL::Context.new(source_file, params)
+        dsl = ActiveETL::DSL.new(context, params)
 
         if source_file
           dsl.instance_eval(File.read(source_file), source_file)
