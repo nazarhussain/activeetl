@@ -10,7 +10,7 @@ module ActiveETL
       # * +:url+        - URL to call
       # * +:methods+    - HTTP Verb GET, POST, DELETE
       # * +:user_agent+ - User Agent String to set
-      # * +:data+       - Hash to data to post in case of POST sent in body, in case of GET sent in url
+      # * +:params+       - Hash to data to post in case of POST sent in body, in case of GET sent in url
       #
       #
       class Http < ActiveETL::Steps::Base
@@ -19,12 +19,18 @@ module ActiveETL
         def process
           case options[:method]
             when 'GET'
-              @result = ActiveETL::Result.new(get(options[:url], options[:params]), ActiveETL::Result::TYPE_BINARY)
+              response = get(options[:url], options[:params])
             when 'POST'
             when 'DELETE'
             else
               raise ArgumentError, "Option Method for value #{options[:method]} not supported by #{self.class}"
           end
+
+          @result = ActiveETL::Result.new(response,
+                                          ActiveETL::Result::TYPE_BINARY, {
+                                              status: last_response.status,
+                                              headers: last_response.headers
+                                          })
           self
         end
 
