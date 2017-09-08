@@ -1,11 +1,7 @@
-require "spec_helper"
+require 'spec_helper'
 
-RSpec.describe Activeetl do
-  it "has a version number" do
-    expect(Activeetl::VERSION).not_to be nil
-  end
-
-  it "does something useful" do
-    expect(false).to eq(true)
+RSpec.describe ActiveETL do
+  it 'has a version number' do
+    expect(ActiveETL::VERSION).not_to be nil
   end
 end

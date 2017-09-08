@@ -19,9 +19,7 @@ module ActiveETL
         def process
           case options[:method]
             when 'GET'
-              data = get(options[:url], options[:data])
-              @result = ActiveETL::Result.new(data)
-              @result.type = ActiveETL::Result::TYPE_STRING
+              @result = ActiveETL::Result.new(get(options[:url], options[:params]), ActiveETL::Result::TYPE_BINARY)
             when 'POST'
             when 'DELETE'
             else
@@ -31,9 +29,11 @@ module ActiveETL
         end
 
         def default_options
-          {url: nil, method: 'GET'.freeze, data: {}, user_agent: 'Active ETL HTTP Agent'.freeze}
+          {url: nil, method: 'GET'.freeze, params: {}, user_agent: 'Active ETL HTTP Agent'.freeze}
         end
 
+        private
+        # To be used by ActiveETL::HttpAgent
         def user_agent
           options[:user_agent]
         end

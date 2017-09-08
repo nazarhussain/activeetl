@@ -11,28 +11,48 @@ module ActiveETL
       # * +:headers+    - Does CSV contains headers, default is true
       # * +:columns+    - Array of columns to extract from CSV
       # * +:encoding+   - CSV File encoding
-      #
-      #
+      # @note headers will be converted to lowercase and symbols
       class Csv < ActiveETL::Steps::Base
 
+        # @return [ActiveETL::Steps::Inputs::Csv]
         def process
-          file = ::CSV.open(options[:path], {encoding: options[:encoding]})
+          raise ArgumentError, 'CSV headers must be read from file or specify by user' unless options[:headers] == true or options[:headers].is_a? Array
 
-          headers  = file.readline if options[:headers]
+          File.open(options[:path], 'r') do |file|
 
-          if options[:headers] and options[:columns]
-            column_indexes = options[:columns].map{ |c| headers.index(c)}
-            headers = options[:columns]
-            data = []
-            file.each do |row|
-              data << row.map.with_index{|v, i| v if column_indexes.include?(i)}.compact
+            # If header option is true and is not a user defined array
+            headers_in_file = options[:headers] && !options[:headers].is_a?(Array)
+
+            if headers_in_file
+              csv = CSV.table(file,
+                              encoding: options[:encoding],
+                              headers: true)
+            else
+              csv = CSV.open(file,
+                             encoding: options[:encoding],
+                             headers: false,
+                             converters: :numeric)
+
+              first_row = csv.readline
+              header_with_row = CSV::Row.new(options[:headers], first_row)
+              table = CSV::Table.new([header_with_row])
+
+              csv.each do |row|
+                table << row
+              end
+
+              csv = table
             end
 
-            @result = ActiveETL::Result.new(data, {headers: headers})
-          else
-            @result = ActiveETL::Result.new(file.readlines, {headers: headers})
+            # If user specify to limit the columns
+            if options[:columns]
+              csv.by_col!
+              (csv.headers - options[:columns]).map {|col| csv.delete(col)}
+              csv.by_row!
+            end
+
+            @result = ActiveETL::Result.new(csv, ActiveETL::Result::TYPE_TABLE, {headers: csv.headers})
           end
-          @result.type = ActiveETL::Result::TYPE_ARRAY
           self
         end
 
