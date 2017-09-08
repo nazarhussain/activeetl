@@ -1,5 +1,6 @@
 require 'bundler/setup'
 require 'activeetl'
+require_relative './spec_utilities'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
