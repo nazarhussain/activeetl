@@ -24,24 +24,12 @@ module ActiveETL
             headers_in_file = options[:headers] && !options[:headers].is_a?(Array)
 
             if headers_in_file
-              csv = CSV.table(file,
-                              encoding: options[:encoding],
-                              headers: true)
+              csv = ActiveETL::Utilities.table_for_csv_with_headers(file,
+                                                                    encoding: options[:encoding])
             else
-              csv = CSV.open(file,
-                             encoding: options[:encoding],
-                             headers: false,
-                             converters: :numeric)
-
-              first_row = csv.readline
-              header_with_row = CSV::Row.new(options[:headers], first_row)
-              table = CSV::Table.new([header_with_row])
-
-              csv.each do |row|
-                table << row
-              end
-
-              csv = table
+              csv = ActiveETL::Utilities.table_for_csv_custom_headers(file,
+                                                                      encoding: options[:encoding],
+                                                                      headers: options[:headers])
             end
 
             # If user specify to limit the columns
